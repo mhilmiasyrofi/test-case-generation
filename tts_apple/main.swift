@@ -50,7 +50,7 @@ synth.setVoice(NSSpeechSynthesizer.VoiceName(rawValue: "com.apple.speech.synthes
 contents.enumerateLines({ (line, stop) -> () in
     i = i + 1
 //    let output_file =  String(format:"/Users/mhilmiasyrofi/Documents/tts/tts/generated_data/audio_%02d.aiff", i)
-    let output_file =  String(format:"/Users/mhilmiasyrofi/Documents/test-case-generation/tts_apple/aiff_generated_speech/audio_%02d.aiff", i)
+    let output_file =  String(format:"/Users/mhilmiasyrofi/Documents/test-case-generation/tts_apple/aiff_generated_speech/audio_%d.aiff", i)
     
     let url = Foundation.URL.init(fileURLWithPath: output_file)
 //    let skill_executor = "Alexa ask transcribe test to record this "
