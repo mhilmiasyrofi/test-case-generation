@@ -95,3 +95,5 @@ tts_apple/generated_speech
 
 tts_google/mp3_generated_speech
 tts_google/generated_speech
+
+sr_alexa/alexa_data
