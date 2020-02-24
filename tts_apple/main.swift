@@ -10,9 +10,6 @@
 import Foundation
 import AppKit
 
-let bash: CommandExecuting = Bash()
-
-
 // show the installed voice list with major attributes
 //let voices = NSSpeechSynthesizer.availableVoices.map { v in (v, NSSpeechSynthesizer.attributes(forVoice: v)[NSSpeechSynthesizer.VoiceAttributeKey.localeIdentifier] as! String) }.sorted  { ($0.1, $0.0.rawValue) < ($1.1, $1.0.rawValue) }
 //for (k, v) in voices {
@@ -39,7 +36,7 @@ let bash: CommandExecuting = Bash()
 //synth.startSpeaking("Alexa open transcribe test", to: url)
 
 // File path (change this).
-let path = "/Users/mhilmiasyrofi/Documents/tts/tts/alexa-test-command.txt"
+let path = "/Users/mhilmiasyrofi/Documents/test-case-generation/alexa-test-command.txt"
 
 // Read an entire text file into an NSString.
 let contents = try NSString(contentsOfFile: path,
@@ -53,7 +50,7 @@ synth.setVoice(NSSpeechSynthesizer.VoiceName(rawValue: "com.apple.speech.synthes
 contents.enumerateLines({ (line, stop) -> () in
     i = i + 1
 //    let output_file =  String(format:"/Users/mhilmiasyrofi/Documents/tts/tts/generated_data/audio_%02d.aiff", i)
-    let output_file =  String(format:"/Users/mhilmiasyrofi/Documents/deepspeech/aiff_data/audio_%02d.aiff", i)
+    let output_file =  String(format:"/Users/mhilmiasyrofi/Documents/test-case-generation/tts_apple/aiff_generated_speech/audio_%02d.aiff", i)
     
     let url = Foundation.URL.init(fileURLWithPath: output_file)
 //    let skill_executor = "Alexa ask transcribe test to record this "
@@ -62,7 +59,11 @@ contents.enumerateLines({ (line, stop) -> () in
     let command = skill_executor + skill_command
     synth.startSpeaking(command, to: url)
     print("Generated: " + command)
-    if let lsOutput = bash.execute(commandName: "ffmpeg", arguments: ["-i", String(format:"/Users/mhilmiasyrofi/Documents/deepspeech/aiff_data/audio_%02d.aiff", i), "-acodec", "pcm_s16le", "-ac", "1" , "-ar", "16000", String(format: "/Users/mhilmiasyrofi/Documents/deepspeech/data/audio_%02d.wav", i), "-y"]) { print("Convert the audio format\n")}
+    // let bash: CommandExecuting = Bash()
+    // let lsOutput = bash.execute(commandName: "ffmpeg", arguments: ["-i", String(format:"/Users/mhilmiasyrofi/Documents/test-case-generation/tts_apple/aiff_generated_speech/audio_%02d.aiff", i), "-acodec", "pcm_s16le", "-ac", "1" , "-ar", "16000", String(format: "/Users/mhilmiasyrofi/Documents/test-case-generation/tts_apple/generated_speech/audio_%02d.wav", i), "-y"])
+    // if (lsOutput != "") {
+    //     print("Convert the audio format\n")
+    // }
 })
 
 
