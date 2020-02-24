@@ -88,6 +88,8 @@ fastlane/test_output
 # https://github.com/johnno1962/injectionforxcode
 
 
+.DS_Store
+
 tts_apple/aiff_generated_speech
 tts_apple/generated_speech
 
