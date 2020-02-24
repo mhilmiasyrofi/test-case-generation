@@ -90,3 +90,6 @@ fastlane/test_output
 
 tts_apple/aiff_generated_speech
 tts_apple/generated_speech
+
+tts_google/mp3_generated_speech
+tts_google/generated_speech
