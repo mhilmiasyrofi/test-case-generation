@@ -49,21 +49,15 @@ let synth = NSSpeechSynthesizer()
 synth.setVoice(NSSpeechSynthesizer.VoiceName(rawValue: "com.apple.speech.synthesis.voice.moira"))
 contents.enumerateLines({ (line, stop) -> () in
     i = i + 1
-//    let output_file =  String(format:"/Users/mhilmiasyrofi/Documents/tts/tts/generated_data/audio_%02d.aiff", i)
     let output_file =  String(format:"/Users/mhilmiasyrofi/Documents/test-case-generation/tts_apple/aiff_generated_speech/audio_%d.aiff", i)
     
     let url = Foundation.URL.init(fileURLWithPath: output_file)
-//    let skill_executor = "Alexa ask transcribe test to record this "
+
     let skill_executor = ""
     let skill_command = line
     let command = skill_executor + skill_command
     synth.startSpeaking(command, to: url)
     print("Generated: " + command)
-    // let bash: CommandExecuting = Bash()
-    // let lsOutput = bash.execute(commandName: "ffmpeg", arguments: ["-i", String(format:"/Users/mhilmiasyrofi/Documents/test-case-generation/tts_apple/aiff_generated_speech/audio_%02d.aiff", i), "-acodec", "pcm_s16le", "-ac", "1" , "-ar", "16000", String(format: "/Users/mhilmiasyrofi/Documents/test-case-generation/tts_apple/generated_speech/audio_%02d.wav", i), "-y"])
-    // if (lsOutput != "") {
-    //     print("Convert the audio format\n")
-    // }
 })
 
 
