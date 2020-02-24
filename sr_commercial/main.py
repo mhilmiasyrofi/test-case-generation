@@ -130,8 +130,7 @@ if __name__ == '__main__':
     translation_gspeech_writer = open("output/gspeech_translation.txt", "w+")
     translation_gcloud_writer = open("output/gcloud_translation.txt", "w+")
     translation_wit_writer = open("output/wit_translation.txt", "w+")
-    translation_houndify_writer = open("output/houndify_translation.txt", "w+")
-
+    
     r = sr.Recognizer()
 
     for fpath in files:
@@ -190,20 +189,7 @@ if __name__ == '__main__':
             print(
                 "Could not request results from Wit.ai service; {0}".format(e))
 
-        # # recognize speech using Houndify
-        # HOUNDIFY_CLIENT_ID = "6nCv2NMoB4Yz310PwCbpjQ=="  # Houndify client IDs are Base64-encoded strings
-        # HOUNDIFY_CLIENT_KEY = "wzahBtWGs-OEbys29m_yQJ9xUkVOkDU57w-MjZnUctuVcjMEEPyU2o9Q7oesSia1IgKI3-jOTQ4ujzMXnIChBA=="  # Houndify client keys are Base64-encoded strings
-        # try:
-        #     translation = recognize_houndify(
-        #         audio, client_id=HOUNDIFY_CLIENT_ID, client_key=HOUNDIFY_CLIENT_KEY)
-        #     translation_houndify_writer.write("%s\n" % (translation))
-        #     print("Houndify thinks you said " + translation)
-        # except sr.UnknownValueError:
-        #     print("Houndify could not understand audio")
-        # except sr.RequestError as e:
-        #     print("Could not request results from Houndify service; {0}".format(e))
 
     translation_gspeech_writer.close()
     translation_gcloud_writer.close()
     translation_wit_writer.close()
-    translation_houndify_writer.close()
