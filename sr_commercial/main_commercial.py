@@ -122,10 +122,6 @@ def recognize_houndify(audio_data, client_id, client_key, show_all=False):
 
 
 if __name__ == '__main__':
-    data = "tts_apple/generated_speech/"
-    files = [f for f in glob.glob(data + "*.wav", recursive=True)]
-    # files = os.listdir(data)
-    files.sort()
 
     translation_gspeech_writer = open("output/gspeech_translation.txt", "w+")
     translation_gcloud_writer = open("output/gcloud_translation.txt", "w+")
@@ -133,61 +129,69 @@ if __name__ == '__main__':
     
     r = sr.Recognizer()
 
-    for fpath in files:
-        AUDIO_FILE = fpath
-        file_id = fpath.split(".")[0].split("/")[-1]
-        print("Processing: " + AUDIO_FILE)
-        # AUDIO_FILE = path.join(path.dirname(
-        #     path.realpath(__file__)), fpath)
-        # AUDIO_FILE = path.join(path.dirname(path.realpath(__file__)), "french.aiff")
-        # AUDIO_FILE = path.join(path.dirname(path.realpath(__file__)), "chinese.flac")
+    data = "data/"
 
-        # use the audio file as the audio source
-        with sr.AudioFile(AUDIO_FILE) as source:
-            audio = r.record(source)  # read the entire audio file
+    for (dirpath, _, filenames) in os.walk(data):
+        if (len(filenames) > 0):
+            if not os.path.exists(dirpath):
+                os.makedirs(dirpath)
+            for filename in filenames:
+                if (".wav" in filename):
+                    fpath = os.path.join(dirpath, filename)
+                    print("Processing: " + fpath)
+                    
+                    # use the audio file as the audio source
+                    with sr.AudioFile(fpath) as source:
+                        audio = r.record(source)  # read the entire audio file
 
-        # recognize speech using Google Speech Recognition
-        try:
-            # for testing purposes, we're just using the default API key
-            # to use another API key, use `r.recognize_google(audio, key="GOOGLE_SPEECH_RECOGNITION_API_KEY")`
-            # instead of `r.recognize_google(audio)`
-            translation = r.recognize_google(audio)
-            translation_gspeech_writer.write(
-                "%s\n" % (file_id + ", " + translation))
-            print("Google Speech Recognition thinks you said " + translation)
-        except sr.UnknownValueError:
-            print("Google Speech Recognition could not understand audio")
-        except sr.RequestError as e:
-            print(
-                "Could not request results from Google Speech Recognition service; {0}".format(e))
+                    # recognize speech using Google Speech Recognition
+                    try:
+                        # for testing purposes, we're just using the default API key
+                        # to use another API key, use `r.recognize_google(audio, key="GOOGLE_SPEECH_RECOGNITION_API_KEY")`
+                        # instead of `r.recognize_google(audio)`
+                        translation = r.recognize_google(audio)
+                        translation_gspeech_writer.write(
+                            "%s\n" % (dirpath + ", " + filename + ", " + translation))
+                        print("Google Speech Recognition thinks you said " + translation)
+                    except sr.UnknownValueError:
+                        print("Google Speech Recognition could not understand audio")
+                        translation_wit_writer.write(
+                            "%s\n" % (dirpath + ", " + filename + ", ")
+                    except sr.RequestError as e:
+                        print(
+                            "Could not request results from Google Speech Recognition service; {0}".format(e))
 
-        # recognize speech using Google Cloud Speech
-        # GOOGLE_CLOUD_SPEECH_CREDENTIALS = r"""INSERT THE CONTENTS OF THE GOOGLE CLOUD SPEECH JSON CREDENTIALS FILE HERE"""
-        try:
-            # print("Google Cloud Speech thinks you said " + r.recognize_google_cloud(audio, credentials_json=GOOGLE_CLOUD_SPEECH_CREDENTIALS))
-            translation = r.recognize_google_cloud(audio)
-            translation_gcloud_writer.write(
-                "%s\n" % (file_id + ", " + translation))
-            print("Google Cloud Speech thinks you said " + translation)
-        except sr.UnknownValueError:
-            print("Google Cloud Speech could not understand audio")
-        except sr.RequestError as e:
-            print(
-                "Could not request results from Google Cloud Speech service; {0}".format(e))
+                    # recognize speech using Google Cloud Speech
+                    # GOOGLE_CLOUD_SPEECH_CREDENTIALS = r"""INSERT THE CONTENTS OF THE GOOGLE CLOUD SPEECH JSON CREDENTIALS FILE HERE"""
+                    try:
+                        # print("Google Cloud Speech thinks you said " + r.recognize_google_cloud(audio, credentials_json=GOOGLE_CLOUD_SPEECH_CREDENTIALS))
+                        translation = r.recognize_google_cloud(audio)
+                        translation_gcloud_writer.write(
+                            "%s\n" % (dirpath + ", " + filename + ", " + translation))
+                        print("Google Cloud Speech thinks you said " + translation)
+                    except sr.UnknownValueError:
+                        print("Google Cloud Speech could not understand audio")
+                        translation_wit_writer.write(
+                            "%s\n" % (dirpath + ", " + filename + ", ")
+                    except sr.RequestError as e:
+                        print(
+                            "Could not request results from Google Cloud Speech service; {0}".format(e))
 
-        # recognize speech using Wit.ai
-        # Wit.ai keys are 32-character uppercase alphanumeric strings
-        WIT_AI_KEY = "5PBOPP2VVZM3MJFQOKK57YRG4DFWXIBZ"
-        try:
-            translation = recognize_wit(audio, key=WIT_AI_KEY)
-            translation_wit_writer.write(
-                "%s\n" % (file_id + ", " + translation))
-            print("Wit.ai thinks you said " + translation)
-        except sr.UnknownValueError:
-            print("Wit.ai could not understand audio")
-        except sr.RequestError as e:
-            print(
-                "Could not request results from Wit.ai service; {0}".format(e))
+                    # recognize speech using Wit.ai
+                    # Wit.ai keys are 32-character uppercase alphanumeric strings
+                    WIT_AI_KEY = "5PBOPP2VVZM3MJFQOKK57YRG4DFWXIBZ"
+                    try:
+                        translation = recognize_wit(audio, key=WIT_AI_KEY)
+                        translation_wit_writer.write(
+                            "%s\n" % (dirpath + ", " + filename + ", " + translation))
+                        print("Wit.ai thinks you said " + translation)
+                    except sr.UnknownValueError:
+                        print("Wit.ai could not understand audio")
+                        translation_wit_writer.write(
+                            "%s\n" % (dirpath + ", " + filename + ", "))
+                    except sr.RequestError as e:
+                        print(
+                            "Could not request results from Wit.ai service; {0}".format(e))
 
 
     translation_gspeech_writer.close()

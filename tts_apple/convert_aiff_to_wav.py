@@ -4,7 +4,14 @@ import os
 # Get the list of all files and directories 
 # in the root directory 
 input_dir = "tts_apple/aiff_generated_speech/"
-output_dir = "tts_apple/generated_speech/"
+output_dir = "data/tts_apple/generated_speech/"
+
+if not os.path.exists(input_dir):
+    os.makedirs(input_dir)
+
+if not os.path.exists(output_dir):
+    os.makedirs(output_dir)
+
 
 dir_list = os.listdir(input_dir) 
 

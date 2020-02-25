@@ -16,7 +16,7 @@ import os
 from gtts import gTTS
 
 mp3_folder = "tts_google/mp3_generated_speech/"
-wav_folder = "tts_google/generated_speech/"
+wav_folder = "data/tts_google/generated_speech/"
 
 if not os.path.exists(mp3_folder):
     os.makedirs(mp3_folder)
