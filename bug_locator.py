@@ -272,24 +272,39 @@ if __name__ == '__main__':
     tts_apple_bug = open("bug/tts/apple_bug.txt", "w+")
     tts_google_bug = open("bug/tts/google_bug.txt", "w+")
 
+    length = len(apple_deepspeech_lines)
 
-
-
-
-    
-
-
-
-
+    for i in range(length) :
+        ## apple tts bug
+        if (i in apple_alexa_map.keys() 
+            and i in apple_deepspeech_map.keys() 
+            and i in apple_gcloud_map.keys()
+            and i in apple_gspeech_map.keys()
+            and i in apple_wit_map.keys()) :
+            if (apple_alexa_map[i] != 0 
+                and apple_deepspeech_map[i] != 0
+                and apple_gcloud_map[i] != 0
+                and apple_gspeech_map[i] != 0
+                and apple_wit_map[i] != 0
+                ) :
+                tts_apple_bug.write(str(i) + "\n")
+        
+        ## google tts bug
+        if (i in google_alexa_map.keys() 
+            and i in google_deepspeech_map.keys() 
+            and i in google_gcloud_map.keys()
+            and i in google_gspeech_map.keys()
+            and i in google_wit_map.keys()) :
+            if (google_alexa_map[i] != 0 
+                and google_deepspeech_map[i] != 0
+                and google_gcloud_map[i] != 0
+                and google_gspeech_map[i] != 0
+                and google_wit_map[i] != 0
+                ) :
+                tts_google_bug.write(str(i) + "\n")
 
     tts_apple_bug.close()
     tts_google_bug.close()
-
-
-
-
-
-
 
 
     apple_alexa.close()
