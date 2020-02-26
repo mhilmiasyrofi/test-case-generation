@@ -151,12 +151,12 @@ if __name__ == '__main__':
                         # instead of `r.recognize_google(audio)`
                         translation = r.recognize_google(audio)
                         translation_gspeech_writer.write(
-                            "%s\n" % (dirpath + ", " + filename + ", " + translation))
+                            "%s\n" % (dirpath + ", " + filename[6:-4] + ", " + translation))
                         print("Google Speech Recognition thinks you said " + translation)
                     except sr.UnknownValueError:
                         print("Google Speech Recognition could not understand audio")
                         translation_wit_writer.write(
-                            "%s\n" % (dirpath + ", " + filename + ", "))
+                            "%s\n" % (dirpath + ", " + filename[6:-4] + ", "))
                     except sr.RequestError as e:
                         print(
                             "Could not request results from Google Speech Recognition service; {0}".format(e))
@@ -167,12 +167,12 @@ if __name__ == '__main__':
                         # print("Google Cloud Speech thinks you said " + r.recognize_google_cloud(audio, credentials_json=GOOGLE_CLOUD_SPEECH_CREDENTIALS))
                         translation = r.recognize_google_cloud(audio)
                         translation_gcloud_writer.write(
-                            "%s\n" % (dirpath + ", " + filename + ", " + translation))
+                            "%s\n" % (dirpath + ", " + filename[6:-4] + ", " + translation))
                         print("Google Cloud Speech thinks you said " + translation)
                     except sr.UnknownValueError:
                         print("Google Cloud Speech could not understand audio")
                         translation_wit_writer.write(
-                            "%s\n" % (dirpath + ", " + filename + ", "))
+                            "%s\n" % (dirpath + ", " + filename[6:-4] + ", "))
                     except sr.RequestError as e:
                         print(
                             "Could not request results from Google Cloud Speech service; {0}".format(e))
@@ -183,12 +183,12 @@ if __name__ == '__main__':
                     try:
                         translation = recognize_wit(audio, key=WIT_AI_KEY)
                         translation_wit_writer.write(
-                            "%s\n" % (dirpath + ", " + filename + ", " + translation))
+                            "%s\n" % (dirpath + ", " + filename[6:-4] + ", " + translation))
                         print("Wit.ai thinks you said " + translation)
                     except sr.UnknownValueError:
                         print("Wit.ai could not understand audio")
                         translation_wit_writer.write(
-                            "%s\n" % (dirpath + ", " + filename + ", "))
+                            "%s\n" % (dirpath + ", " + filename[6:-4] + ", "))
                     except sr.RequestError as e:
                         print(
                             "Could not request results from Wit.ai service; {0}".format(e))

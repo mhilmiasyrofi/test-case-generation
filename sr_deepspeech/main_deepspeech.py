@@ -24,7 +24,8 @@ if __name__ == '__main__':
 
                     transcription = out.decode("utf-8")
                     
-                    translation_writer.write("%s" % (dirpath + ", " + filename + ", " + transcription))
+                    translation_writer.write(
+                        "%s" % (dirpath + ", " + filename[6:-4] + ", " + transcription))
                     # print("Out: " + transcription)
 
     translation_writer.close()

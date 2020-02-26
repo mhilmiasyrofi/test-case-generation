@@ -46,7 +46,10 @@ for (dirpath, _, filenames) in os.walk(data):
                     print("Audio " + str(i) + "- Can't get response")
 
                 if (success):
-                    translation_writer.write("%s\n" % (dirpath + ", " + filename + ", "+ text))
+                    translation_writer.write("%s\n" % (dirpath + ", " + filename[6:-4] + ", " + text))
+                else :
+                    translation_writer.write("%s\n" % (dirpath + ", " + filename[6:-4] + ", "))
+                    
 
 translation_writer.close()
 
