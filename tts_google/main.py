@@ -24,7 +24,7 @@ if not os.path.exists(mp3_folder):
 if not os.path.exists(wav_folder):
     os.makedirs(wav_folder)
 
-file = open("alexa-test-command.txt")
+file = open("corpus-sentence.txt")
 lines = file.readlines()
 
 i = 0

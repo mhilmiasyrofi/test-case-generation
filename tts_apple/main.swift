@@ -12,7 +12,7 @@ import AppKit
 import Cocoa
 
 // File path (change this).
-let path = "/Users/mhilmiasyrofi/Documents/test-case-generation/alexa-test-command.txt"
+let path = "/Users/mhilmiasyrofi/Documents/test-case-generation/corpus-sentence.txt"
 // Read an entire text file into an NSString.
 let contents = try NSString(contentsOfFile: path,
     encoding: String.Encoding.ascii.rawValue)
