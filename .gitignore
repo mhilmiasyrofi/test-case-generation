@@ -91,10 +91,11 @@ fastlane/test_output
 .DS_Store
 
 tts_apple/aiff_generated_speech/
-tts_apple/generated_speech/
-
 tts_google/mp3_generated_speech/
-tts_google/generated_speech/
+
+data/
+output/
+error/
 
 sr_alexa/alexa_data/
 
