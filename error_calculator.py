@@ -2,7 +2,7 @@ from jiwer import wer
 
 if __name__ == '__main__':
 
-    file = open("alexa-test-command.txt")
+    file = open("corpus-sentence.txt")
 
     lines = file.readlines()
 
