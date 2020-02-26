@@ -91,6 +91,7 @@ fastlane/test_output
 .DS_Store
 
 tts_apple/aiff_generated_speech/
+tts_apple/tts_apple_executable
 tts_google/mp3_generated_speech/
 
 data/
