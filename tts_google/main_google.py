@@ -30,7 +30,7 @@ lines = file.readlines()
 i = 0
 for line in lines:
     i = i + 1
-    tts = gTTS(line, lang='en-ph')
+    tts = gTTS(line, lang='en-us')
     outfile = mp3_folder + "audio_%d.mp3" % i
     wavfile = wav_folder + "audio_%d.wav" % i
     tts.save(outfile)
