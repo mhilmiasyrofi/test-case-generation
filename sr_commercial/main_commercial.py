@@ -20,6 +20,19 @@ from urllib.request import Request, urlopen
 from urllib.error import URLError, HTTPError
 
 
+class WaitTimeoutError(Exception):
+    pass
+
+
+class RequestError(Exception):
+    pass
+
+
+class UnknownValueError(Exception):
+    pass
+
+
+
 def recognize_wit(audio_data, key, show_all=False):
     """
     Performs speech recognition on ``audio_data`` (an ``AudioData`` instance), using the Wit.ai API.
