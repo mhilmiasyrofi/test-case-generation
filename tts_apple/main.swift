@@ -22,10 +22,10 @@ let synth = NSSpeechSynthesizer()
 let voices = NSSpeechSynthesizer.availableVoices.map { v in (v, NSSpeechSynthesizer.attributes(forVoice: v)[NSSpeechSynthesizer.VoiceAttributeKey.localeIdentifier] as! String) }.sorted  { ($0.1, $0.0.rawValue) < ($1.1, $1.0.rawValue) }
 for (k, v) in voices {
     if (v.contains("en")) {
-        if (v.contains("ZA")) {
+        if (v.contains("US") && k.rawValue.contains("Alex")) {
             let voice_id = k.rawValue
-            let accent_id = v
-            let directory = String("/Users/mhilmiasyrofi/Documents/test-case-generation/tts_apple/aiff_generated_speech/")
+            // let accent_id = v
+            // let directory = String("/Users/mhilmiasyrofi/Documents/test-case-generation/tts_apple/aiff_generated_speech/")
 
             synth.setVoice(NSSpeechSynthesizer.VoiceName(rawValue: voice_id))
 
