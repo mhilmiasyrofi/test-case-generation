@@ -27,7 +27,7 @@ if __name__ == '__main__':
                     
                     translation_writer.write(
                         "%s" % (dirpath + ", " + filename[6:-4] + ", " + transcription))
-                    # print("Out: " + transcription)
+                    print("Transcription: " + transcription)
 
     translation_writer.close()
 
