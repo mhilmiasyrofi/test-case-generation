@@ -135,8 +135,9 @@ if __name__ == '__main__':
         if (len(filenames) > 0):
             if not os.path.exists(dirpath):
                 os.makedirs(dirpath)
-            for filename in filenames:
-                if (".wav" in filename):
+            for i in range(1, len(filenames)+1) :
+                filename = "audio_" + str(i) + ".wav"
+                if (filename in filenames):
                     fpath = os.path.join(dirpath, filename)
                     print("Processing: " + fpath)
                     
