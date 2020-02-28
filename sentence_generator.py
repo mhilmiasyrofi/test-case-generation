@@ -15,8 +15,26 @@ def preprocess(sentence):
 	return " ".join(tokens)
 
 
-def hasNumbers(inputString):
+def has_numbers(inputString):
     return any(char.isdigit() for char in inputString)
+
+def write_corpus_data(corpus, file) :
+    for words in corpus:
+        if (len(words) >= 6 and  len(words) <= 10):
+            sentence = " ".join(words)
+            if (not has_numbers(sentence)):
+                preprocessed = preprocess(sentence)
+                if ("_" not in preprocessed and " s " not in preprocessed and " d " not in preprocessed and " d" != preprocessed[-2:] and len(preprocessed) > 17):
+                    file.write(preprocessed + "\n")
+        elif (len(words) > 10 ) :
+            while(len(words) > 10) :
+                sub_sentece = words[:10]
+                sentence = " ".join(sub_sentece)
+                if (not has_numbers(sentence)):
+                    preprocessed = preprocess(sentence)
+                    if ("_" not in preprocessed and " s " not in preprocessed and " d " not in preprocessed and " d" != preprocessed[-2:] and len(preprocessed) > 13):
+                        file.write(preprocessed + "\n")
+                words = words[10:]
 
 if __name__ == '__main__':
     try:
@@ -32,60 +50,12 @@ if __name__ == '__main__':
 
     file = open("corpus-sentence.txt", "w+")
 
-    emma = nltk.Text(nltk.corpus.gutenberg.sents('austen-emma.txt'))
-    for words in emma :
-        if (len(words) >= 5 and len(words) <= 13):
-            sentence = " ".join(words)
-            if (not hasNumbers(sentence)) :
-                preprocessed = preprocess(sentence)
-                if ("_" not in preprocessed and " s " not in preprocessed and " d " not in preprocessed and " d" != preprocessed[-2:] and len(preprocessed) > 13):
-                    file.write(preprocessed + "\n")
+    file_ids = nltk.corpus.gutenberg.fileids()
 
-    persuasion = nltk.Text(nltk.corpus.gutenberg.sents('austen-persuasion.txt'))
-    for words in persuasion :
-        if (len(words) >= 5 and len(words) <= 13):
-            sentence = " ".join(words)
-            if (not hasNumbers(sentence)):
-                preprocessed = preprocess(sentence)
-                if ("_" not in preprocessed and " s " not in preprocessed and " d " not in preprocessed and " d" != preprocessed[-2:] and len(preprocessed) > 13):
-                    file.write(preprocessed + "\n")
+    for file_id in file_ids :
+        print("Processing: " + file_id)
+        corpus = nltk.Text(nltk.corpus.gutenberg.sents(file_id))
+        write_corpus_data(corpus, file)
 
-    sense = nltk.Text(nltk.corpus.gutenberg.sents('austen-sense.txt'))
-    for words in sense:
-        if (len(words) >= 5 and len(words) <= 13):
-            sentence = " ".join(words)
-            if (not hasNumbers(sentence)):
-                preprocessed = preprocess(sentence)
-                if ("_" not in preprocessed and " s " not in preprocessed and " d " not in preprocessed and " d" != preprocessed[-2:] and len(preprocessed) > 13):
-                    file.write(preprocessed + "\n")
-
-    caesar = nltk.Text(nltk.corpus.gutenberg.sents('shakespeare-caesar.txt'))
-    for words in caesar:
-        if (len(words) >= 5 and len(words) <= 13):
-            sentence = " ".join(words)
-            if (not hasNumbers(sentence)):
-                preprocessed = preprocess(sentence)
-                if ("_" not in preprocessed and " s " not in preprocessed and " d " not in preprocessed and " d" != preprocessed[-2:] and len(preprocessed) > 13):
-                    file.write(preprocessed + "\n")
-
-    hamlet = nltk.Text(nltk.corpus.gutenberg.sents('shakespeare-hamlet.txt'))
-    for words in hamlet:
-        if (len(words) >= 5 and len(words) <= 13):
-            sentence = " ".join(words)
-            if (not hasNumbers(sentence)):
-                preprocessed = preprocess(sentence)
-                if ("_" not in preprocessed and " s " not in preprocessed and " d " not in preprocessed and " d" != preprocessed[-2:] and len(preprocessed) > 13):
-                    file.write(preprocessed + "\n")
-
-    macbeth = nltk.Text(nltk.corpus.gutenberg.sents('shakespeare-macbeth.txt'))
-    for words in macbeth:
-        if (len(words) >= 5 and len(words) <= 13):
-            sentence = " ".join(words)
-            if (not hasNumbers(sentence)):
-                preprocessed = preprocess(sentence)
-                if ("_" not in preprocessed and " s " not in preprocessed and " d " not in preprocessed and " d" != preprocessed[-2:] and len(preprocessed) > 13):
-                    file.write(preprocessed + "\n")
-
-    
     file.close()
 
