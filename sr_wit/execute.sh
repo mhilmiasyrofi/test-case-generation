@@ -1,3 +1,3 @@
 source /Users/mhilmiasyrofi/./env/bin/activate
-python sr_commercial/main_commercial.py
+python sr_deepspeech/main_wit.py
 deactivate /Users/mhilmiasyrofi/./env/bin/activate
