@@ -54,12 +54,22 @@ if __name__ == '__main__':
     google_wit_lines = google_wit.readlines()
     google_wit_map = getMapping(google_wit_lines)
 
+
+    apple_wav2letter = open("error/apple_wav2letter.txt")
+    apple_wav2letter_lines = apple_wav2letter.readlines()
+    apple_wav2letter_map = getMapping(apple_wav2letter_lines)
+
+    google_wav2letter = open("error/google_wav2letter.txt")
+    google_wav2letter_lines = google_wav2letter.readlines()
+    google_wav2letter_map = getMapping(google_wav2letter_lines)
+
     
     alexa_bug = open("bug/sr/alexa_bug.txt", "w+")
     deepspeech_bug = open("bug/sr/deepspeech_bug.txt", "w+")
     gcloud_bug = open("bug/sr/gcloud_bug.txt", "w+")
     gspeech_bug = open("bug/sr/gspeech_bug.txt", "w+")
     wit_bug = open("bug/sr/wit_bug.txt", "w+")
+    wav2letter_bug = open("bug/sr/wav2letter_bug.txt", "w+")
 
 
     ### ALEXA BUG
@@ -262,11 +272,51 @@ if __name__ == '__main__':
             if isOtherSpeechRecognitionCanTranslate:
                 wit_bug.write("google, " + str(idx) + "\n")
 
+    ### Wav2Letter BUG
+    for idx, wav2letter_error in apple_wav2letter_map.items():
+        if (wav2letter_error != 0):
+            isOtherSpeechRecognitionCanTranslate = False
+            if (idx in apple_alexa_map.keys()):
+                if (apple_alexa_map[idx] == 0):
+                    isOtherSpeechRecognitionCanTranslate = True
+            if (idx in apple_deepspeech_map.keys()):
+                if (apple_deepspeech_map[idx] == 0):
+                    isOtherSpeechRecognitionCanTranslate = True
+            if (idx in apple_gcloud_map.keys()):
+                if (apple_gcloud_map[idx] == 0):
+                    isOtherSpeechRecognitionCanTranslate = True
+            if (idx in apple_gspeech_map.keys()):
+                if (apple_gspeech_map[idx] == 0):
+                    isOtherSpeechRecognitionCanTranslate = True
+
+            if isOtherSpeechRecognitionCanTranslate:
+                wav2letter_bug.write("apple, " + str(idx) + "\n")
+
+    for idx, wav2letter_error in google_wav2letter_map.items():
+        if (wav2letter_error != 0):
+            isOtherSpeechRecognitionCanTranslate = False
+            if (idx in google_alexa_map.keys()):
+                if (google_alexa_map[idx] == 0):
+                    isOtherSpeechRecognitionCanTranslate = True
+            if (idx in google_deepspeech_map.keys()):
+                if (google_deepspeech_map[idx] == 0):
+                    isOtherSpeechRecognitionCanTranslate = True
+            if (idx in google_gcloud_map.keys()):
+                if (google_gcloud_map[idx] == 0):
+                    isOtherSpeechRecognitionCanTranslate = True
+            if (idx in google_gspeech_map.keys()):
+                if (google_gspeech_map[idx] == 0):
+                    isOtherSpeechRecognitionCanTranslate = True
+
+            if isOtherSpeechRecognitionCanTranslate:
+                wav2letter_bug.write("google, " + str(idx) + "\n")
+
     alexa_bug.close()
     deepspeech_bug.close()
     gcloud_bug.close()
     gspeech_bug.close()
     wit_bug.close()
+    wav2letter_bug.close()
 
 
     tts_apple_bug = open("bug/tts/apple_bug.txt", "w+")
