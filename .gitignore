@@ -98,7 +98,10 @@ data/
 output/
 error/
 bug/
+training_data/
 
 sr_alexa/alexa_data/
 
 sr_deepspeech/deepspeech-0.6.1-models/
+
+corpus-sentence.txt
