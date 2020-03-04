@@ -23,6 +23,12 @@ if __name__ == '__main__':
     gspeech_bugs = get_bug_location("bug/sr/gspeech_bug.txt")
     wav2letter_bugs = get_bug_location("bug/sr/wav2letter_bug.txt")
     wit_bugs = get_bug_location("bug/sr/wit_bug.txt")
+    all_failed_tests = open("bug/sr/all_failed_tests.txt")
+    lines = all_failed_tests.readlines()
+    failed_tests = []
+    for id in lines :
+        failed_tests.append(int(id))
+    all_failed_tests.close()
 
 
     file = open("corpus-sentence.txt")
@@ -40,20 +46,20 @@ if __name__ == '__main__':
     i = 0
     for sentence in corpus :
         i += 1
+        if (i not in failed_tests) :
+            alexa_training_data.write(sentence[:-1])
+            deepspeech_training_data.write(sentence[:-1])
+            gcloud_training_data.write(sentence[:-1])
+            gspeech_training_data.write(sentence[:-1])
+            wav2letter_training_data.write(sentence[:-1])
+            wit_training_data.write(sentence[:-1])
 
-        alexa_training_data.write(sentence[:-1])
-        deepspeech_training_data.write(sentence[:-1])
-        gcloud_training_data.write(sentence[:-1])
-        gspeech_training_data.write(sentence[:-1])
-        wav2letter_training_data.write(sentence[:-1])
-        wit_training_data.write(sentence[:-1])
-
-        write_label(alexa_bugs, alexa_training_data)
-        write_label(deepspeech_bugs, deepspeech_training_data)
-        write_label(gcloud_bugs, gcloud_training_data)
-        write_label(gspeech_bugs, gspeech_training_data)
-        write_label(wav2letter_bugs, wav2letter_training_data)
-        write_label(wit_bugs, wit_training_data)
+            write_label(alexa_bugs, alexa_training_data)
+            write_label(deepspeech_bugs, deepspeech_training_data)
+            write_label(gcloud_bugs, gcloud_training_data)
+            write_label(gspeech_bugs, gspeech_training_data)
+            write_label(wav2letter_bugs, wav2letter_training_data)
+            write_label(wit_bugs, wit_training_data)
 
     alexa_training_data.close()
     deepspeech_training_data.close()
