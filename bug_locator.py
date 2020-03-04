@@ -10,6 +10,8 @@ def getMapping(lines) :
 
 if __name__ == '__main__':
 
+
+
     apple_alexa = open("error/apple_alexa.txt")
     apple_alexa_lines = apple_alexa.readlines()
     apple_alexa_map = getMapping(apple_alexa_lines)
@@ -71,6 +73,9 @@ if __name__ == '__main__':
     wit_bug = open("bug/sr/wit_bug.txt", "w+")
     wav2letter_bug = open("bug/sr/wav2letter_bug.txt", "w+")
 
+    all_failed_tests = open("bug/sr/all_failed_tests.txt", "w+")
+
+    all_failed_test_case = []
 
     ### ALEXA BUG
     for idx, alexa_error in apple_alexa_map.items():
@@ -110,6 +115,8 @@ if __name__ == '__main__':
 
             if isOtherSpeechRecognitionCanTranslate:
                 alexa_bug.write("google, " + str(idx) + "\n")
+            else :
+                all_failed_test_case.append(idx)
 
 
 
@@ -132,25 +139,27 @@ if __name__ == '__main__':
 
             if isOtherSpeechRecognitionCanTranslate:
                 deepspeech_bug.write("apple, " + str(idx) + "\n")
+            
 
     for idx, deepspeech_error in google_deepspeech_map.items():
-        if (deepspeech_error != 0):
-            isOtherSpeechRecognitionCanTranslate = False
-            if (idx in google_alexa_map.keys()):
-                if (google_alexa_map[idx] == 0):
-                    isOtherSpeechRecognitionCanTranslate = True
-            if (idx in google_gcloud_map.keys()):
-                if (google_gcloud_map[idx] == 0):
-                    isOtherSpeechRecognitionCanTranslate = True
-            if (idx in google_gspeech_map.keys()):
-                if (google_gspeech_map[idx] == 0):
-                    isOtherSpeechRecognitionCanTranslate = True
-            if (idx in google_wit_map.keys()):
-                if (google_wit_map[idx] == 0):
-                    isOtherSpeechRecognitionCanTranslate = True
+        if (idx not in all_failed_test_case):
+            if (deepspeech_error != 0):
+                isOtherSpeechRecognitionCanTranslate = False
+                if (idx in google_alexa_map.keys()):
+                    if (google_alexa_map[idx] == 0):
+                        isOtherSpeechRecognitionCanTranslate = True
+                if (idx in google_gcloud_map.keys()):
+                    if (google_gcloud_map[idx] == 0):
+                        isOtherSpeechRecognitionCanTranslate = True
+                if (idx in google_gspeech_map.keys()):
+                    if (google_gspeech_map[idx] == 0):
+                        isOtherSpeechRecognitionCanTranslate = True
+                if (idx in google_wit_map.keys()):
+                    if (google_wit_map[idx] == 0):
+                        isOtherSpeechRecognitionCanTranslate = True
 
-            if isOtherSpeechRecognitionCanTranslate:
-                deepspeech_bug.write("google, " + str(idx) + "\n")
+                if isOtherSpeechRecognitionCanTranslate:
+                    deepspeech_bug.write("google, " + str(idx) + "\n")
 
     ### GCLOUD BUG
     for idx, gcloud_error in apple_gcloud_map.items():
@@ -173,23 +182,24 @@ if __name__ == '__main__':
                 gcloud_bug.write("apple, " + str(idx) + "\n")
 
     for idx, gcloud_error in google_gcloud_map.items():
-        if (gcloud_error != 0):
-            isOtherSpeechRecognitionCanTranslate = False
-            if (idx in google_alexa_map.keys()):
-                if (google_alexa_map[idx] == 0):
-                    isOtherSpeechRecognitionCanTranslate = True
-            if (idx in google_deepspeech_map.keys()):
-                if (google_deepspeech_map[idx] == 0):
-                    isOtherSpeechRecognitionCanTranslate = True
-            if (idx in google_gspeech_map.keys()):
-                if (google_gspeech_map[idx] == 0):
-                    isOtherSpeechRecognitionCanTranslate = True
-            if (idx in google_wit_map.keys()):
-                if (google_wit_map[idx] == 0):
-                    isOtherSpeechRecognitionCanTranslate = True
+        if (idx not in all_failed_test_case):
+            if (gcloud_error != 0):
+                isOtherSpeechRecognitionCanTranslate = False
+                if (idx in google_alexa_map.keys()):
+                    if (google_alexa_map[idx] == 0):
+                        isOtherSpeechRecognitionCanTranslate = True
+                if (idx in google_deepspeech_map.keys()):
+                    if (google_deepspeech_map[idx] == 0):
+                        isOtherSpeechRecognitionCanTranslate = True
+                if (idx in google_gspeech_map.keys()):
+                    if (google_gspeech_map[idx] == 0):
+                        isOtherSpeechRecognitionCanTranslate = True
+                if (idx in google_wit_map.keys()):
+                    if (google_wit_map[idx] == 0):
+                        isOtherSpeechRecognitionCanTranslate = True
 
-            if isOtherSpeechRecognitionCanTranslate:
-                gcloud_bug.write("google, " + str(idx) + "\n")
+                if isOtherSpeechRecognitionCanTranslate:
+                    gcloud_bug.write("google, " + str(idx) + "\n")
 
 
 
@@ -214,23 +224,24 @@ if __name__ == '__main__':
                 gspeech_bug.write("apple, " + str(idx) + "\n")
 
     for idx, gspeech_error in google_gspeech_map.items():
-        if (gspeech_error != 0):
-            isOtherSpeechRecognitionCanTranslate = False
-            if (idx in google_alexa_map.keys()):
-                if (google_alexa_map[idx] == 0):
-                    isOtherSpeechRecognitionCanTranslate = True
-            if (idx in google_deepspeech_map.keys()):
-                if (google_deepspeech_map[idx] == 0):
-                    isOtherSpeechRecognitionCanTranslate = True
-            if (idx in google_gcloud_map.keys()):
-                if (google_gcloud_map[idx] == 0):
-                    isOtherSpeechRecognitionCanTranslate = True
-            if (idx in google_wit_map.keys()):
-                if (google_wit_map[idx] == 0):
-                    isOtherSpeechRecognitionCanTranslate = True
+        if (idx not in all_failed_test_case):
+            if (gspeech_error != 0):
+                isOtherSpeechRecognitionCanTranslate = False
+                if (idx in google_alexa_map.keys()):
+                    if (google_alexa_map[idx] == 0):
+                        isOtherSpeechRecognitionCanTranslate = True
+                if (idx in google_deepspeech_map.keys()):
+                    if (google_deepspeech_map[idx] == 0):
+                        isOtherSpeechRecognitionCanTranslate = True
+                if (idx in google_gcloud_map.keys()):
+                    if (google_gcloud_map[idx] == 0):
+                        isOtherSpeechRecognitionCanTranslate = True
+                if (idx in google_wit_map.keys()):
+                    if (google_wit_map[idx] == 0):
+                        isOtherSpeechRecognitionCanTranslate = True
 
-            if isOtherSpeechRecognitionCanTranslate:
-                gspeech_bug.write("google, " + str(idx) + "\n")
+                if isOtherSpeechRecognitionCanTranslate:
+                    gspeech_bug.write("google, " + str(idx) + "\n")
 
 
     ### WIT BUG
@@ -254,23 +265,24 @@ if __name__ == '__main__':
                 wit_bug.write("apple, " + str(idx) + "\n")
 
     for idx, wit_error in google_wit_map.items():
-        if (wit_error != 0):
-            isOtherSpeechRecognitionCanTranslate = False
-            if (idx in google_alexa_map.keys()):
-                if (google_alexa_map[idx] == 0):
-                    isOtherSpeechRecognitionCanTranslate = True
-            if (idx in google_deepspeech_map.keys()):
-                if (google_deepspeech_map[idx] == 0):
-                    isOtherSpeechRecognitionCanTranslate = True
-            if (idx in google_gcloud_map.keys()):
-                if (google_gcloud_map[idx] == 0):
-                    isOtherSpeechRecognitionCanTranslate = True
-            if (idx in google_gspeech_map.keys()):
-                if (google_gspeech_map[idx] == 0):
-                    isOtherSpeechRecognitionCanTranslate = True
+        if (idx not in all_failed_test_case):
+            if (wit_error != 0):
+                isOtherSpeechRecognitionCanTranslate = False
+                if (idx in google_alexa_map.keys()):
+                    if (google_alexa_map[idx] == 0):
+                        isOtherSpeechRecognitionCanTranslate = True
+                if (idx in google_deepspeech_map.keys()):
+                    if (google_deepspeech_map[idx] == 0):
+                        isOtherSpeechRecognitionCanTranslate = True
+                if (idx in google_gcloud_map.keys()):
+                    if (google_gcloud_map[idx] == 0):
+                        isOtherSpeechRecognitionCanTranslate = True
+                if (idx in google_gspeech_map.keys()):
+                    if (google_gspeech_map[idx] == 0):
+                        isOtherSpeechRecognitionCanTranslate = True
 
-            if isOtherSpeechRecognitionCanTranslate:
-                wit_bug.write("google, " + str(idx) + "\n")
+                if isOtherSpeechRecognitionCanTranslate:
+                    wit_bug.write("google, " + str(idx) + "\n")
 
     ### Wav2Letter BUG
     for idx, wav2letter_error in apple_wav2letter_map.items():
@@ -293,23 +305,24 @@ if __name__ == '__main__':
                 wav2letter_bug.write("apple, " + str(idx) + "\n")
 
     for idx, wav2letter_error in google_wav2letter_map.items():
-        if (wav2letter_error != 0):
-            isOtherSpeechRecognitionCanTranslate = False
-            if (idx in google_alexa_map.keys()):
-                if (google_alexa_map[idx] == 0):
-                    isOtherSpeechRecognitionCanTranslate = True
-            if (idx in google_deepspeech_map.keys()):
-                if (google_deepspeech_map[idx] == 0):
-                    isOtherSpeechRecognitionCanTranslate = True
-            if (idx in google_gcloud_map.keys()):
-                if (google_gcloud_map[idx] == 0):
-                    isOtherSpeechRecognitionCanTranslate = True
-            if (idx in google_gspeech_map.keys()):
-                if (google_gspeech_map[idx] == 0):
-                    isOtherSpeechRecognitionCanTranslate = True
+        if (idx not in all_failed_test_case):
+            if (wav2letter_error != 0):
+                isOtherSpeechRecognitionCanTranslate = False
+                if (idx in google_alexa_map.keys()):
+                    if (google_alexa_map[idx] == 0):
+                        isOtherSpeechRecognitionCanTranslate = True
+                if (idx in google_deepspeech_map.keys()):
+                    if (google_deepspeech_map[idx] == 0):
+                        isOtherSpeechRecognitionCanTranslate = True
+                if (idx in google_gcloud_map.keys()):
+                    if (google_gcloud_map[idx] == 0):
+                        isOtherSpeechRecognitionCanTranslate = True
+                if (idx in google_gspeech_map.keys()):
+                    if (google_gspeech_map[idx] == 0):
+                        isOtherSpeechRecognitionCanTranslate = True
 
-            if isOtherSpeechRecognitionCanTranslate:
-                wav2letter_bug.write("google, " + str(idx) + "\n")
+                if isOtherSpeechRecognitionCanTranslate:
+                    wav2letter_bug.write("google, " + str(idx) + "\n")
 
     alexa_bug.close()
     deepspeech_bug.close()
@@ -317,6 +330,11 @@ if __name__ == '__main__':
     gspeech_bug.close()
     wit_bug.close()
     wav2letter_bug.close()
+
+    for id in all_failed_test_case :
+        all_failed_tests.write(str(id) + "\n")
+    
+    all_failed_tests.close()
 
 
     tts_apple_bug = open("bug/tts/apple_bug.txt", "w+")
