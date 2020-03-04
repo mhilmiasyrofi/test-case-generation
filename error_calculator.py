@@ -1,5 +1,47 @@
 from jiwer import wer
 
+def preprocess_translation(translation) :
+    translation = translation[:-1].lower()
+    words = translation.split(" ")
+    preprocessed = []
+    for w in words :
+        substitution = ""
+        if w == "mister" :
+            substitution = "mr"
+        elif w == "missus":
+            substitution = "mrs"
+        elif w == "can not":
+            substitution = "cannot"
+        elif w == "mr." :
+            substitution = "mr"
+        elif w == "i'm" :
+            substitution = "i am"
+        elif w == "you're":
+            substitution = "you are"
+        elif w == "1" :
+            substitution = "one"
+        elif w == "2" :
+            substitution = "two"
+        elif w == "3" :
+            substitution = "three"
+        elif w == "4" :
+            substitution = "four"
+        elif w == "5" :
+            substitution = "five"
+        elif w == "6" :
+            substitution = "six"
+        elif w == "7" :
+            substitution = "seven"
+        elif w == "8" :
+            substitution = "eight"
+        elif w == "9" :
+            substitution = "nine"
+        else :
+            substitution = w
+        preprocessed.append(substitution)
+    return " ".join(preprocessed)[1:] + "\n"
+
+
 if __name__ == '__main__':
 
     file = open("corpus-sentence.txt")
@@ -28,6 +70,7 @@ if __name__ == '__main__':
             audio_id = parts[1]
             idx = int(audio_id)
             translation = parts[2]
+            translation = preprocess_translation(translation)
             error = "%.2f" % wer(translation, data[int(audio_id)])
             if ("apple" in tts):
                 if (idx not in apple.keys()):
@@ -66,6 +109,10 @@ if __name__ == '__main__':
             audio_id = parts[1]
             idx = int(audio_id)
             translation = parts[2]
+            translation = preprocess_translation(translation)
+            # if (int(audio_id) == 336) :
+            #     print("T: " + str(translation))
+            #     print("A: " + str(data[int(audio_id)]))
             error = "%.2f" % wer(translation, data[int(audio_id)])
             if ("apple" in tts):
                 if (idx not in apple.keys()) :
@@ -104,6 +151,7 @@ if __name__ == '__main__':
             audio_id = parts[1]
             idx = int(audio_id)
             translation = parts[2]
+            translation = preprocess_translation(translation)
             error = "%.2f" % wer(translation, data[int(audio_id)])
             if ("apple" in tts):
                 if (idx not in apple.keys()):
@@ -142,6 +190,7 @@ if __name__ == '__main__':
             audio_id = parts[1]
             idx = int(audio_id)
             translation = parts[2]
+            translation = preprocess_translation(translation)
             error = "%.2f" % wer(translation, data[int(audio_id)])
             if ("apple" in tts):
                 if (idx not in apple.keys()):
@@ -181,6 +230,7 @@ if __name__ == '__main__':
             audio_id = parts[1]
             idx = int(audio_id)
             translation = parts[2]
+            translation = preprocess_translation(translation)
             error = "%.2f" % wer(translation, data[int(audio_id)])
             if ("apple" in tts):
                 if (idx not in apple.keys()):
@@ -221,6 +271,7 @@ if __name__ == '__main__':
             audio_id = parts[1]
             idx = int(audio_id)
             translation = parts[2]
+            translation = preprocess_translation(translation)
             error = "%.2f" % wer(translation, data[int(audio_id)])
             if ("apple" in tts):
                 if (idx not in apple.keys()):
