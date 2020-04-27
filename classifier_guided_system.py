@@ -6,6 +6,8 @@ import os
 import subprocess
 import string
 
+import math
+
 import numpy as np
 
 import wave
@@ -19,11 +21,19 @@ from wit import Wit
 
 import speech_recognition
 
+from gensim.models import Word2Vec
+
+
+# Speech
+import soundfile as sf  # pip install pysoundfile
+# pip install python_speech_features
+import python_speech_features as speech_lib
+
 from jiwer import wer
 
 import joblib
 
-
+from datetime import datetime
 
 class WaitTimeoutError(Exception):
     pass
@@ -31,6 +41,11 @@ class RequestError(Exception):
     pass
 class UnknownValueError(Exception):
     pass
+
+
+BUG_LABEL = 1
+NON_BUG_LABEL = 0
+UNDETERMINED_LABEL = -1
 
 
 GOOGLE_TTS = "google"
@@ -43,11 +58,12 @@ GCLOUD = "gcloud"
 CHROMESPEECH = "gspeech"
 WIT = "wit"
 WAV2LETTER = "wav2letter"
-SR = [ALEXA, DEEPSPEECH, WIT]
+PADDLEDEEPSPEECH = "paddledeepspeech"
+SR = [DEEPSPEECH, WIT, WAV2LETTER, PADDLEDEEPSPEECH]
 
 r = speech_recognition.Recognizer()
 
-CLASSIFIER_MODEL = "NB"
+CLASSIFIER_MODEL = "SVC"
 classifier = {}
 for sr in SR :
     classifier_fpath = "model/" + CLASSIFIER_MODEL + "_" + sr + ".sav"
@@ -66,15 +82,15 @@ BASE_URL_NORTH_AMERICA = 'alexa.na.gateway.devices.a2z.com'
 # wit 
 WIT_AI_KEY = "5PBOPP2VVZM3MJFQOKK57YRG4DFWXIBZ"
 
+if ALEXA in SR :
+    client = AlexaClient(
+        client_id=client_id,
+        secret=client_secret,
+        refresh_token=refresh_token,
+        base_url=BASE_URL_NORTH_AMERICA
+    )
 
-client = AlexaClient(
-    client_id=client_id,
-    secret=client_secret,
-    refresh_token=refresh_token,
-    base_url=BASE_URL_NORTH_AMERICA
-)
-
-client.connect()  # authenticate and other handshaking steps
+    client.connect()  # authenticate and other handshaking steps
 
 
 def remove_punctuation(sentence):
@@ -90,24 +106,136 @@ def get_corpus(fpath) :
     corpus = []
     file = open(fpath)
     lines = file.readlines()
+    id = 1
     for l in lines :
-        corpus.append(l[:-1])
+        corpus.append({"id": id, "text": l[:-1]})
+        id += 1
     file.close()
+    # random.shuffle(corpus)
     return corpus
 
 
 def classify_text(text) :
-    is_bug = 1
     
     # text = remove_punctuation(text)
     # sentence = np.array([text])
     # feature = transformer.transform(sentence)
-    # is_bug = 0
-    # for sr in SR :
-    #     if (predict_using_classifier(sr, feature)) :
-    #         is_bug = 1
-    #         break
+    feature = extract_feature_using_word2vec(text)
+    bug_counter = 0
+    non_bug_counter = 0
+    for sr in SR :
+        prediction = predict_using_classifier(sr, feature)
+        if (prediction == BUG_LABEL) :
+            bug_counter += 1
+        elif (prediction == NON_BUG_LABEL) :
+            non_bug_counter += 1
+            
+    is_bug = False
+    if (bug_counter > 0 and non_bug_counter > 0) :
+        is_bug = True
+    
+    # print("\n\n\n\n")
+    # print("is bug: ")
+    # print(is_bug)
     return is_bug
+
+w2v_model = Word2Vec.load("model/word2vec.model")
+def extract_feature_using_word2vec(text) :
+    tokenized_sentence = text_process(text)
+    encoded_docs = [[w2v_model.wv[word] for word in sentence]
+                    for sentence in [tokenized_sentence]]
+    padded_docs = create_padding_on_sentence(encoded_docs)
+    flatten_array = flatten_docs(padded_docs)
+    return flatten_array
+    
+    
+def text_process(sentence):
+    nopunc = [char for char in sentence if char not in string.punctuation]
+    nopunc = ''.join(nopunc)
+    return [word for word in nopunc.split()]
+
+
+NUM_CORES = 4
+EMBEDDING_SIZE = 13
+MAX_LENGTH = 75
+
+# because the length of each sentence is various
+# and we use non-sequential machine learning model
+# we need to make padding for each sentences
+def create_padding_on_sentence(encoded_docs):
+    padded_posts = []
+
+    for post in encoded_docs:
+
+        # Pad short posts with alternating min/max
+        if len(post) < MAX_LENGTH:
+
+            padding_size = MAX_LENGTH - len(post)
+
+            for _ in range(0, padding_size):
+                post.append(np.zeros((EMBEDDING_SIZE)))
+
+        # Shorten long posts or those odd number length posts we padded to MAX_LENGTH
+        if len(post) > MAX_LENGTH:
+            post = post[:MAX_LENGTH]
+
+        # Add the post to our new list of padded posts
+        padded_posts.append(post)
+
+    return padded_posts
+
+
+def flatten_docs(padded_docs):
+    flatten = []
+    for sentence in padded_docs:
+        ps = []
+        for word in sentence:
+            for feature in word:
+                ps.append(feature)
+        flatten.append(ps)
+    return np.asarray(flatten)
+
+
+def classify_speech(filepath):
+
+    mfcc_num = 13 # same as defined when experiment
+    feature = get_audio_feature_from_file(filepath, mfcc_num)
+    bug_counter = 0
+    non_bug_counter = 0
+    print("feature: " + str(feature))
+    for sr in SR:
+        prediction = predict_using_classifier(sr, feature)
+        print(sr + "-predicted: " + str(prediction))
+        if (prediction == BUG_LABEL):
+            bug_counter += 1
+        elif (prediction == NON_BUG_LABEL):
+            non_bug_counter += 1
+
+    is_bug = False
+    if (bug_counter > 0 and non_bug_counter > 0):
+        is_bug = True
+
+    print("\n\n\n\n")
+    print("is bug: ")
+    print(is_bug)
+    return is_bug
+
+
+def get_audio_feature_from_file(filepath, mfcc_num):
+    feature = None
+    with open(filepath, 'rb') as f:
+
+        signal, samplerate = sf.read(f)
+
+        MFCCs = speech_lib.mfcc(signal, samplerate, winlen=0.060, winstep=0.03, numcep=mfcc_num,
+                                nfilt=mfcc_num, nfft=960, lowfreq=0, highfreq=None, preemph=0.97,
+                                ceplifter=22, appendEnergy=False)
+
+        #mean value of each MFCC over the sample
+        mean_mfcc = np.expand_dims(np.mean(MFCCs, axis=0), axis=1).T
+        feature = mean_mfcc
+
+    return feature
 
 
 def predict_using_classifier(sr, feature) :
@@ -126,10 +254,15 @@ def generate_speech(text, timestamp) :
         tts.save(outfile)
         print(outfile)
         print(wavfile)
-        os.system('ffmpeg -i /Users/mhilmiasyrofi/Documents/test-case-generation/' + outfile +
-                  ' -acodec pcm_s16le -ac 1 -ar 16000 /Users/mhilmiasyrofi/Documents/test-case-generation/' + wavfile + ' -y')
+        linux_folder = "/home/mhilmiasyrofi/Documents/test-case-generation/"
+        if os.path.exists(linux_folder):
+            os.system('ffmpeg -i /home/mhilmiasyrofi/Documents/test-case-generation/' + outfile + ' -acodec pcm_s16le -ac 1 -ar 16000 /home/mhilmiasyrofi/Documents/test-case-generation/' + wavfile + ' -y')
+        else :
+            os.system('ffmpeg -i /Users/mhilmiasyrofi/Documents/test-case-generation/' + outfile + ' -acodec pcm_s16le -ac 1 -ar 16000 /Users/mhilmiasyrofi/Documents/test-case-generation/' + wavfile + ' -y')
 
     inject_alexa_command(timestamp)
+
+    return wavfile
 
 def recognize_speech(timestamp) :
     transcriptions = {}
@@ -147,6 +280,8 @@ def recognize_speech(timestamp) :
             transcriptions[WIT] = wit_recognize(timestamp)
         elif sr == WAV2LETTER :
             transcriptions[WAV2LETTER] = wav2letter_recognize(timestamp)
+        elif sr == PADDLEDEEPSPEECH :
+            transcriptions[PADDLEDEEPSPEECH] = paddledeepspeech_recognize(timestamp)
     
     return transcriptions
 
@@ -225,6 +360,22 @@ def wit_recognize(timestamp) :
     
     return transcription
 
+
+def paddledeepspeech_recognize(timestamp):
+    filename = "audio_%s.wav" % timestamp
+    fpath = "/test-case-generation/" + "guided_data/wav/" + filename
+    
+    cmd = 'docker exec -ti deepspeech2 sh -c "cd DeepSpeech && python infer_one_file.py --filename="' + fpath + '" --mean_std_path="models/librispeech/mean_std.npz" --vocab_path="models/librispeech/vocab.txt" --model_path="models/librispeech" --lang_model_path="models/lm/common_crawl_00.prune01111.trie.klm" --decoding_method="ctc_beam_search" --use_gpu=False --beam_size=500 --num_proc_bsearch=8 --num_conv_layers=2 --num_rnn_layers=3 "'
+
+    proc = subprocess.Popen([cmd], stdout=subprocess.PIPE, shell=True)
+    (out, err) = proc.communicate()
+
+    transcription = out.decode("utf-8").split("\n")[-2]
+
+    # print("DeepSpeech2 transcription: %s" % transcription)
+
+    return transcription[:-1]
+
 def chromespeech_recognize(timestamp) :
 
     filename = "audio_%s.wav" % timestamp
@@ -248,7 +399,6 @@ def chromespeech_recognize(timestamp) :
         pass
 
     return transcription
-
 
 def gcloud_recognize(timestamp) :
 
@@ -357,6 +507,8 @@ def calculate_recognition_error(text, transcriptions) :
             errors[WIT] = round(wer(text, preprocess_transcription(transcriptions[WIT])), 2)
         elif sr == WAV2LETTER :
             errors[WAV2LETTER] = round(wer(text, preprocess_transcription(transcriptions[WAV2LETTER])), 2)
+        elif sr == PADDLEDEEPSPEECH :
+            errors[PADDLEDEEPSPEECH] = round(wer(text, preprocess_transcription(transcriptions[PADDLEDEEPSPEECH])), 2)
 
     return errors
 
@@ -366,20 +518,20 @@ def preprocess_transcription(transcription):
     words = transcription.split(" ")
     preprocessed = []
     for w in words:
-        substitution = ""
-        if w == "mister":
-            substitution = "mr"
-        elif w == "missus":
-            substitution = "mrs"
-        elif w == "can not":
-            substitution = "cannot"
-        elif w == "mr.":
-            substitution = "mr"
-        elif w == "i'm":
-            substitution = "i am"
-        elif w == "you're":
-            substitution = "you are"
-        elif w == "1":
+        # substitution = ""
+        # if w == "mister":
+        #     substitution = "mr"
+        # elif w == "missus":
+        #     substitution = "mrs"
+        # elif w == "can not":
+        #     substitution = "cannot"
+        # elif w == "mr.":
+        #     substitution = "mr"
+        # elif w == "i'm":
+        #     substitution = "i am"
+        # elif w == "you're":
+        #     substitution = "you are"
+        if w == "1":
             substitution = "one"
         elif w == "2":
             substitution = "two"
@@ -434,46 +586,117 @@ def initiate_folders() :
         if not os.path.exists(folder):
             os.makedirs(folder)
 
-if __name__ == '__main__' :
 
-    initiate_folders()
+if __name__ == '__main__' :    
 
-    fpath = "corpus-sentence.txt"
-    corpus = get_corpus(fpath)
+    needed_bugs_max = 30
     
-    # shuffle the data
-    random.shuffle(corpus)
-    
-    # using queue to process data one by one
-    q = queue.Queue()
-    for text in corpus :
-        q.put(text)
+    x = 0
+    while x < 3 : 
+        x += 1
 
-    detected = []
-    
-    start_time = time.time()
-    needed_bug = 10
-    current_bug = 0
-    while (not q.empty() and current_bug < needed_bug) :
-        text = q.get()
-        is_predicted_bug = classify_text(text)
-        if (is_predicted_bug) :
-            timestamp = get_timestamp()
-            generate_speech(text, timestamp)
-            transcriptions = recognize_speech(timestamp)
-            errors = calculate_recognition_error(text, transcriptions)
-            bugs = {}
-            if 0 not in errors.values() :
-                print("Can't determine bug")
-            elif np.sum(errors.values()) == 0 :
-                print("All Speech Recognition can recognize")
-            else :
-                bugs = bug_locator(errors)
+        initiate_folders()
+
+        fpath = "corpus-sentence.txt"
+        corpus = get_corpus(fpath)
+
+        test_corpus = []
+        train_size = math.ceil(len(corpus) * 3 / 4)
+        for i in range(train_size, len(corpus)):
+            test_corpus.append(corpus[i])
+        
+        corpus = test_corpus.copy()
+
+        # shuffle the data
+        random.shuffle(corpus)
+
+        # using queue to process data one by one
+        q = queue.Queue()
+        for data in corpus :
+            q.put(data)
+
+        detected = []
+        
+        time_execution_with_classifier = {}
+        
+        start_time = time.time()
+        current_bug = 0
+        while (not q.empty() and current_bug < needed_bugs_max) :
+            data = q.get()           
             
-            if (1 in bugs.values()) :
+            timestamp = get_timestamp()
+            filepath = generate_speech(data["text"], timestamp)
+            is_predicted_bug = classify_speech(filepath)
+            if (is_predicted_bug) :
+
+            # is_predicted_bug = classify_text(data["text"])
+            # if (is_predicted_bug) :
+            #     timestamp = get_timestamp()
+            #     generate_speech(data["text"], timestamp)
+                transcriptions = recognize_speech(timestamp)
+                errors = calculate_recognition_error(data["text"], transcriptions)
+                bugs = {}
+                if 0 not in errors.values() :
+                    print("Can't determine bug")
+                elif np.sum(errors.values()) == 0 :
+                    print("All Speech Recognition can recognize")
+                else :
+                    bugs = bug_locator(errors)
+                
+                if (1 in bugs.values()) :
+                    print("\n\n\n")
+                    print("text")
+                    print(data["text"])
+                    print("transcriptions")
+                    print(transcriptions)
+                    print("error")
+                    print(errors)
+                    print("bugs")
+                    print(bugs)
+                    # break
+                    current_bug += 1
+                    time_execution = round(time.time() - start_time, 2)
+                    time_execution_with_classifier[current_bug] = time_execution
+        
+        file = open("result/with_classifier_" + str(needed_bugs_max) + "_" +
+                    str(datetime.now()) + ".txt", "w+")
+        for k, v in time_execution_with_classifier.items():
+            file.write("%d, %f\n" % (k, v))
+        
+        file.close()
+
+
+
+
+        # using queue to process data one by one
+        q = queue.Queue()
+        for data in corpus:
+            q.put(data)
+
+        detected = []
+
+        time_execution_without_classifier = {}
+
+        start_time = time.time()
+        current_bug = 0
+        while (not q.empty() and current_bug < needed_bugs_max):
+            data = q.get()
+            timestamp = get_timestamp()
+            generate_speech(data["text"], timestamp)
+            transcriptions = recognize_speech(timestamp)
+            errors = calculate_recognition_error(data["text"], transcriptions)
+            bugs = {}
+            if 0 not in errors.values():
+                print("Can't determine bug")
+            elif np.sum(errors.values()) == 0:
+                print("All Speech Recognition can recognize")
+            else:
+                bugs = bug_locator(errors)
+
+            if (1 in bugs.values()):
                 print("\n\n\n")
                 print("text")
-                print(text)
+                print(data["text"])
                 print("transcriptions")
                 print(transcriptions)
                 print("error")
@@ -482,10 +705,15 @@ if __name__ == '__main__' :
                 print(bugs)
                 # break
                 current_bug += 1
-    
-    end_time = time.time()
-
-    print("Time needed: %s"  % round( end_time - start_time, 2))
+                time_execution = round(time.time() - start_time, 2)
+                time_execution_without_classifier[current_bug] = time_execution
+        
+        file = open("result/without_classifier_" + str(needed_bugs_max) + "_" +
+                    str(datetime.now()) + ".txt", "w+")
+        for k, v in time_execution_without_classifier.items():
+            file.write("%d, %f\n" % (k, v))
+        
+        file.close()
 
     
     # print(corpus)
