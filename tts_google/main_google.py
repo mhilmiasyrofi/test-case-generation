@@ -30,10 +30,11 @@ lines = file.readlines()
 i = 0
 for line in lines:
     i = i + 1
-    tts = gTTS(line, lang='en-us')
-    outfile = mp3_folder + "audio_%d.mp3" % i
-    wavfile = wav_folder + "audio_%d.wav" % i
-    tts.save(outfile)
-    os.system('ffmpeg -i /Users/mhilmiasyrofi/Documents/test-case-generation/' + outfile +
-              ' -acodec pcm_s16le -ac 1 -ar 16000 /Users/mhilmiasyrofi/Documents/test-case-generation/' + wavfile + ' -y')
-    print("Generated audio_%d.wav" % i)
+    if (i >= 26599 and i <= 28539):
+        tts = gTTS(line, lang='en-us')
+        outfile = mp3_folder + "audio_%d.mp3" % i
+        wavfile = wav_folder + "audio_%d.wav" % i
+        tts.save(outfile)
+        os.system('ffmpeg -i /home/mhilmiasyrofi/Documents/test-case-generation/' + outfile +
+                ' -acodec pcm_s16le -ac 1 -ar 16000 /home/mhilmiasyrofi/Documents/test-case-generation/' + wavfile + ' -y')
+        print("Generated audio_%d.wav" % i)

@@ -32,7 +32,7 @@ if __name__ == '__main__':
 
                 translation = translation[:-1]
 
-                wav2letter_tanslation.write("data/tts_apple/generated_speech, " + str(i) + ", " + translation + "\n")
+                wav2letter_tanslation.write("data/tts_google/generated_speech, " + str(i) + ", " + translation + "\n")
                                         
                 file.close()
 
