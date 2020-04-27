@@ -20,21 +20,21 @@ def has_numbers(inputString):
 
 def write_corpus_data(corpus, file) :
     for words in corpus:
-        if (len(words) >= 6 and  len(words) <= 10):
+        if (len(words) >= 5 and  len(words) <= 15):
             sentence = " ".join(words)
             if (not has_numbers(sentence)):
                 preprocessed = preprocess(sentence)
-                if ("_" not in preprocessed and " s " not in preprocessed and " d " not in preprocessed and " d" != preprocessed[-2:] and len(preprocessed) > 17):
+                if ("_" not in preprocessed and " s " not in preprocessed and " d " not in preprocessed and "mr" not in preprocessed and " d" != preprocessed[-2:] and len(preprocessed) > 17):
                     file.write(preprocessed + "\n")
-        elif (len(words) > 10 ) :
-            while(len(words) > 10) :
-                sub_sentece = words[:10]
-                sentence = " ".join(sub_sentece)
-                if (not has_numbers(sentence)):
-                    preprocessed = preprocess(sentence)
-                    if ("_" not in preprocessed and " s " not in preprocessed and " d " not in preprocessed and " d" != preprocessed[-2:] and len(preprocessed) > 13):
-                        file.write(preprocessed + "\n")
-                words = words[10:]
+        # elif (len(words) > 10 ) :
+        #     while(len(words) > 10) :
+        #         sub_sentece = words[:10]
+        #         sentence = " ".join(sub_sentece)
+        #         if (not has_numbers(sentence)):
+        #             preprocessed = preprocess(sentence)
+        #             if ("_" not in preprocessed and " s " not in preprocessed and " d " not in preprocessed and "mr" not in preprocessed and " d" != preprocessed[-2:] and len(preprocessed) > 13):
+        #                 file.write(preprocessed + "\n")
+        #         words = words[10:]
 
 if __name__ == '__main__':
     try:
@@ -52,9 +52,14 @@ if __name__ == '__main__':
 
     file_ids = nltk.corpus.gutenberg.fileids()
 
+    i = 0
     for file_id in file_ids :
+        i += 1
         print("Processing: " + file_id)
         corpus = nltk.Text(nltk.corpus.gutenberg.sents(file_id))
+        # if (i == 1) :
+        #     for words in corpus :
+        #         print("word: " + str(words))
         write_corpus_data(corpus, file)
 
     file.close()
